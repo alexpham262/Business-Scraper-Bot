@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 const express = require('express');
 const path = require('path');
@@ -321,19 +322,11 @@ async function scrapeBusinessInfo() {
   scrapingProgress.current = 0;
   
   // Khởi tạo trình duyệt - tối ưu cho cloud environment
-  const browser = await puppeteer.launch({
-    headless: true, // Thay đổi từ 'new' sang true cho phiên bản mới của Puppeteer
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-      '--disable-gpu'
-    ]
-  });
+const browser = await puppeteer.launch({
+  args: chromium.args,
+  executablePath: await chromium.executablePath,
+  headless: true
+});
   
   try {
     const page = await browser.newPage();
